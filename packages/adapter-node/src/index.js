@@ -57,11 +57,19 @@ function shutdown() {
 		}
 	});
 
-	shutdown_timeout_id = setTimeout(
-		// @ts-expect-error this was added in 18.2.0 but is not reflected in the types
-		() => server.server.closeAllConnections(),
-		shutdown_timeout * 1000
-	);
+	if (requests === 0) {
+		server.server.closeAllConnections()
+		process.exit(0)
+	} else {
+		shutdown_timeout_id = setTimeout(
+			// @ts-expect-error this was added in 18.2.0 but is not reflected in the types
+			() => {
+				server.server.closeAllConnections()
+				process.exit(0)
+			},
+			shutdown_timeout * 1000
+		);
+	}
 }
 
 server.server.on(
